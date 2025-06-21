@@ -1,0 +1,33 @@
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Candidate</th>
+      <th>Status</th>
+      <th>Resume</th>
+      <th>Note</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% applications.forEach(app => { %>
+      <tr>
+        <td><%= app.candidate.name %></td>
+        <td><%= app.status %></td>
+        <td><a href="<%= app.resume.link %>" target="_blank">View Resume</a></td>
+        <td><%= app.note || "—" %></td>
+        <td>
+          <form method="POST" action="/applications/<%= app._id %>/status?_method=PUT" class="d-flex gap-2">
+            <select name="status" class="form-select form-select-sm">
+              <option value="Pending" <%= app.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+              <option value="Shortlisted" <%= app.status === 'Shortlisted' ? 'selected' : '' %>>Shortlisted</option>
+              <option value="Interview" <%= app.status === 'Interview' ? 'selected' : '' %>>Interview</option>
+              <option value="Rejected" <%= app.status === 'Rejected' ? 'selected' : '' %>>Rejected</option>
+            </select>
+            <input type="text" name="note" value="<%= app.note || '' %>" class="form-control form-control-sm" placeholder="Private note" />
+            <button class="btn btn-sm btn-success">Save</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

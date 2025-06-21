@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HireBench</title>
+
+  <!-- Bootstrap CSS -->
+  <link 
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" 
+    rel="stylesheet" 
+    integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" 
+    crossorigin="anonymous"
+  >
+
+  <!-- ✅ Bootstrap Icons (add this line) -->
+  <link 
+    rel="stylesheet" 
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+  />
+
+  <!-- Font Awesome (optional if you're using it too) -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- Your custom CSS -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById('navbar-search-form');
+    const input = document.getElementById('navbar-search-input');
+    const icon = document.querySelector('.navbar-search-icon'); // Search icon
+
+    function handleSearchSubmit(e) {
+      if (e) e.preventDefault();
+
+      const query = input.value.trim();
+      if (!query) return;
+
+      const currentPath = window.location.pathname;
+      let targetPath = currentPath;
+
+      const recruiterAppRegex = /^\/recruiter\/([a-f\d]{24})\/applications$/;
+
+      if (recruiterAppRegex.test(currentPath)) {
+        const jobId = currentPath.match(recruiterAppRegex)[1];
+        targetPath = `/recruiter/${jobId}/applications`;
+      } else if (currentPath === "/applications/received") {
+        targetPath = "/applications/received";
+      } else if (currentPath.startsWith("/resumes")) {
+        targetPath = "/resumes";
+      } else if (currentPath.startsWith("/applications")) {
+        targetPath = "/applications";
+      } else if (currentPath.startsWith("/users")) {
+        targetPath = "/users";
+      }
+
+      window.location.href = `${targetPath}?search=${encodeURIComponent(query)}`;
+    }
+
+    if (form && input) {
+      form.addEventListener('submit', handleSearchSubmit);
+    }
+
+    if (icon) {
+      icon.addEventListener('click', handleSearchSubmit);
+    }
+  });
+</script>
+
+
+<body>
+    <div class="d-flex flex-column min-vh-100">
+        <%-include("../includes/navbar.ejs")%>
+        <div class="container">
+            <%-include("../includes/flash.ejs")%>
+            <%-body%>
+        </div>
+        <%-include("../includes/footer.ejs")%>
+    </div>
+    <script 
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+        crossorigin="anonymous">
+    </script>
+    <script src="/js/script.js"></script>
+</body>
+</html>

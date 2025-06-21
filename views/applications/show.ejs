@@ -1,0 +1,123 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-5">
+  <div class="bg-light rounded shadow-sm p-4">
+
+    <!-- Title -->
+    <h2 class="text-center fw-bold mb-4" style="color: #2c3e50;">Application Details</h2>
+
+    <!-- Job Info -->
+    <div class="resume-section">
+      <h5 class="mb-2" style="color: #555;">Applied Job</h5>
+      <p class="mb-0 text-muted">
+        <strong><%= application.job.title %></strong> at <%= application.job.company %><br>
+        <small><%= application.job.location %> | Posted: <%= new Date(application.job.createdAt).toLocaleDateString() %></small>
+      </p>
+      <p class="mt-2"><%= application.job.description %></p>
+    </div>
+
+    <!-- Application Status -->
+    <div class="resume-section">
+      <h5 class="mb-2" style="color: #555;">Application Status</h5>
+
+      <% if (currentUser && currentUser.role === 'recruiter') { %>
+        <form action="/applications/<%= application._id %>/status?_method=PUT" method="POST" class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <label for="status" class="form-label text-muted">Change Status</label>
+            <select name="status" id="status" class="form-select shadow-sm border-dark-subtle">
+              <% ['Pending', 'Shortlisted', 'Interview', 'Rejected'].forEach(opt => { %>
+                <option value="<%= opt %>" <%= application.status === opt ? 'selected' : '' %>><%= opt %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="note" class="form-label text-muted">Private Note</label>
+            <input type="text" name="note" id="note" class="form-control shadow-sm" value="<%= application.note || '' %>" placeholder="Optional note for candidate">
+          </div>
+          <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-dark w-100">Save</button>
+          </div>
+        </form>
+      <% } else { %>
+        <p>
+          <strong>Status:</strong> 
+          <span class="badge 
+            <% if (application.status === 'Pending') { %> bg-secondary
+            <% } else if (application.status === 'Shortlisted') { %> bg-warning
+            <% } else if (application.status === 'Interview') { %> bg-dark
+            <% } else if (application.status === 'Rejected') { %> bg-danger
+            <% } %>">
+            <%= application.status %>
+          </span>
+        </p>
+        <% if (application.note) { %>
+          <p><strong>Recruiter Note:</strong> <em><%= application.note %></em></p>
+        <% } else { %>
+          <p class="text-muted"><em>No note provided yet.</em></p>
+        <% } %>
+      <% } %>
+    </div>
+
+    <!-- Message from Recruiter -->
+    <div class="resume-section">
+      <h5 class="mb-2" style="color: #555;">Message from Recruiter</h5>
+      <p class="text-muted"><%= application.message || "No message provided." %></p>
+    </div>
+
+    <!-- Resume Info -->
+    <div class="resume-section">
+      <h5 class="mb-2" style="color: #555;">Resume Used</h5>
+
+      <% if (application.resume) { %>
+        <p><strong>Title:</strong> <%= application.resume.title %></p>
+        
+        <% if (application.resume.content) { %>
+          <pre class="bg-white p-3 border rounded"><%= application.resume.content %></pre>
+        <% } else { %>
+          <p class="text-muted">No resume content available.</p>
+        <% } %>
+
+        <a href="/resumes/<%= application.resume._id %>" target="_blank" class="btn btn-sm btn-outline-dark mt-2">
+          View Full Resume
+        </a>
+      <% } else { %>
+        <p class="text-danger">No resume was attached to this application.</p>
+      <% } %>
+    </div>
+     <!-- Withdraw Button -->
+    <% if (currentUser && currentUser.role !== 'recruiter' && !['Rejected', 'Withdrawn'].includes(application.status)) { %>
+      <div class="text-center mt-4">
+        <form action="/applications/<%= application._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure you want to withdraw this application?');">
+          <button class="btn btn-outline-danger">Withdraw Application</button>
+        </form>
+      </div>
+    <% } %>
+
+  </div>
+</div>
+
+<style>
+  .resume-section {
+    margin-bottom: 2rem;
+    padding: 1rem 1.2rem;
+    background-color: #ffffff;
+    border-left: 4px solid #636e72;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .badge.bg-secondary {
+    background-color: #95a5a6 !important;
+  }
+  .badge.bg-warning {
+    background-color: #f1c40f !important;
+  }
+  .badge.bg-dark {
+    background-color: #2d3436 !important;
+  }
+  .badge.bg-danger {
+    background-color: #d63031 !important;
+  }
+  .btn-dark:hover {
+    background-color: #2d3436;
+  }
+</style>

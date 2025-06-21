@@ -1,0 +1,139 @@
+<% layout("/layouts/boilerplate.ejs") %>
+
+<div class="container py-5">
+  <div class="card shadow-lg border-0 rounded-4">
+    <div class="card-body p-5">
+      <h2 class="mb-4 text-center text-primary fw-bold">Edit Job</h2>
+
+      <form 
+        method="POST" 
+        action="/jobs/<%= job._id %>?_method=PUT" 
+        enctype="multipart/form-data"
+        class="needs-validation" 
+        novalidate
+      >
+        <div class="row g-4">
+          <!-- Left Column -->
+          <div class="col-md-6">
+            <!-- Job Title -->
+            <div>
+              <label for="title" class="form-label fw-semibold">Job Title</label>
+              <input 
+                id="title"
+                name="job[title]" 
+                value="<%= job.title %>" 
+                placeholder="e.g. Software Engineer" 
+                type="text" 
+                class="form-control" 
+                required
+              >
+              <div class="invalid-feedback">Please provide a job title.</div>
+            </div>
+
+            <!-- Company Name -->
+            <div class="mt-3">
+              <label for="company" class="form-label fw-semibold">Company Name</label>
+              <input 
+                id="company"
+                name="job[company]" 
+                value="<%= job.company %>" 
+                placeholder="e.g. Infosys Ltd." 
+                type="text" 
+                class="form-control" 
+                required
+              >
+              <div class="invalid-feedback">Please provide a company name.</div>
+            </div>
+
+            <!-- Location -->
+            <div class="mt-3">
+              <label for="location" class="form-label fw-semibold">Location</label>
+              <input 
+                id="location"
+                name="job[location]" 
+                value="<%= job.location %>" 
+                placeholder="e.g. Pune, India" 
+                type="text" 
+                class="form-control" 
+                required
+              >
+              <div class="invalid-feedback">Please provide a location.</div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="col-md-6">
+            <!-- Salary -->
+            <div>
+              <label for="salary" class="form-label fw-semibold">Salary (per annum)</label>
+              <input 
+                id="salary"
+                name="job[salary]" 
+                value="<%= job.salary %>" 
+                placeholder="e.g. 800000" 
+                type="number" 
+                class="form-control" 
+                min="0"
+                step="10000"
+                required
+              >
+              <div class="invalid-feedback">Please provide a valid salary.</div>
+            </div>
+
+            <!-- Existing Logo -->
+            <div class="mt-3">
+              <label class="form-label fw-semibold">Current Logo</label>
+              <div class="mb-2">
+                <% if (job.logoImage && job.logoImage.data) { %>
+                  <img 
+                    src="data:<%= job.logoImage.contentType %>;base64,<%= job.logoImage.data.toString('base64') %>" 
+                    alt="Company Logo" 
+                    class="img-thumbnail rounded shadow-sm" 
+                    style="max-height:100px;"
+                  >
+                <% } else { %>
+                  <p class="text-muted">No logo uploaded.</p>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- New Logo Upload -->
+            <div>
+              <label for="logoImage" class="form-label fw-semibold">Replace Logo (JPG/PNG)</label>
+              <input 
+                id="logoImage"
+                name="logoImage"
+                type="file" 
+                accept=".jpg, .jpeg, .png"
+                class="form-control"
+              >
+              <div class="form-text">Leave blank to keep the current logo.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Job Description (Full Width) -->
+        <div class="mt-4">
+          <label for="description" class="form-label fw-semibold">Job Description</label>
+          <textarea 
+            id="description"
+            name="job[description]" 
+            class="form-control" 
+            placeholder="Describe the role and responsibilities..."
+            rows="5"
+            required
+          ><%= job.description %></textarea>
+          <div class="invalid-feedback">Please provide a description.</div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-end mt-4">
+          <button type="submit" class="btn btn-primary px-4">
+            <i class="bi bi-arrow-repeat me-2"></i> Update
+          </button>
+          <a href="/jobs/<%= job._id %>" class="btn btn-outline-secondary ms-3">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

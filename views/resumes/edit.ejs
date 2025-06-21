@@ -1,0 +1,87 @@
+<% layout("/layouts/boilerplate.ejs") %>
+
+<div class="container py-5">
+  <div class="card shadow-lg border-0 rounded-4">
+    <div class="card-body p-5">
+      <h2 class="mb-4 text-center fw-bold text-secondary">Edit Resume</h2>
+
+      <form action="/resumes/<%= resume._id %>?_method=PUT" method="POST" class="needs-validation" novalidate>
+
+        <!-- Title -->
+        <div class="mb-3">
+          <label for="title" class="form-label fw-semibold">Title</label>
+          <input type="text" name="resume[title]" id="title" class="form-control" required value="<%= resume.title %>">
+        </div>
+
+        <!-- Summary -->
+        <div class="mb-3">
+          <label for="summary" class="form-label fw-semibold">Summary</label>
+          <textarea name="resume[summary]" id="summary" class="form-control" rows="3"><%= resume.summary %></textarea>
+        </div>
+
+        <!-- Skills -->
+        <div class="mb-3">
+          <label for="skills" class="form-label fw-semibold">Skills (comma separated)</label>
+          <input type="text" name="resume[skills]" id="skills" class="form-control" value="<%= resume.skills.join(', ') %>">
+        </div>
+
+        <!-- Education -->
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Education</label>
+          <div id="education-fields">
+            <% resume.education.forEach((edu, index) => { %>
+              <div class="border rounded p-3 mb-3 bg-light">
+                <input type="text" name="resume[education][<%= index %>][degree]" placeholder="Degree" class="form-control mb-2" value="<%= edu.degree %>">
+                <input type="text" name="resume[education][<%= index %>][institution]" placeholder="Institution" class="form-control mb-2" value="<%= edu.institution %>">
+                <input type="text" name="resume[education][<%= index %>][field]" placeholder="Field of Study" class="form-control mb-2" value="<%= edu.field %>">
+                <input type="number" name="resume[education][<%= index %>][startYear]" placeholder="Start Year" class="form-control mb-2" value="<%= edu.startYear %>">
+                <input type="number" name="resume[education][<%= index %>][endYear]" placeholder="End Year" class="form-control" value="<%= edu.endYear %>">
+              </div>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- Experience -->
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Experience</label>
+          <div id="experience-fields">
+            <% (resume.experience.length ? resume.experience : [{}]).forEach((exp, index) => {
+              const startDate = exp.startDate ? new Date(exp.startDate).toISOString().split('T')[0] : '';
+              const endDate = exp.endDate ? new Date(exp.endDate).toISOString().split('T')[0] : '';
+            %>
+              <div class="border rounded p-3 mb-3 bg-light">
+                <input type="text" name="resume[experience][<%= index %>][company]" placeholder="Company" class="form-control mb-2" value="<%= exp.company || '' %>">
+                <input type="text" name="resume[experience][<%= index %>][role]" placeholder="Role" class="form-control mb-2" value="<%= exp.role || '' %>">
+                <input type="date" name="resume[experience][<%= index %>][startDate]" class="form-control mb-2" value="<%= startDate %>">
+                <input type="date" name="resume[experience][<%= index %>][endDate]" class="form-control mb-2" value="<%= endDate %>">
+                <input type="text" name="resume[experience][<%= index %>][description]" placeholder="Description" class="form-control" value="<%= exp.description || '' %>">
+              </div>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- Projects -->
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Projects</label>
+          <div id="projects-fields">
+            <% (resume.projects.length ? resume.projects : [{}]).forEach((proj, index) => { %>
+              <div class="border rounded p-3 mb-3 bg-light">
+                <input type="text" name="resume[projects][<%= index %>][name]" placeholder="Project Name" class="form-control mb-2" value="<%= proj.name || '' %>">
+                <textarea name="resume[projects][<%= index %>][description]" placeholder="Project Description" class="form-control" rows="3"><%= proj.description || '' %></textarea>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="d-flex justify-content-end mt-4">
+          <button class="btn btn-dark px-4" type="submit">
+            <i class="bi bi-save2-fill me-2"></i> Update Resume
+          </button>
+          <a href="/resumes" class="btn btn-outline-secondary ms-3">Cancel</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,175 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+  <div class="bg-light rounded shadow-sm p-4">
+
+    <!-- Title -->
+    <h2 class="text-center fw-bold mb-4" style="color: #2c3e50;"><%= resume.title %></h2>
+
+    <% if (resume.scoreMap && Object.keys(resume.scoreMap).length > 0) { %>
+      <div class="mb-4">
+        <h5 class="fw-semibold text-muted mb-2">Scores by Job</h5>
+        
+        <% Object.entries(resume.scoreMap).forEach(([jobId, jobScore]) => {
+            if (!jobId.match(/^[a-f\d]{24}$/i)) return;
+            const job = jobMap && jobMap[jobId];
+        %>
+          <% if (!job) { %>
+            <div class="alert alert-warning p-2 small">
+              ⚠️ Job not found for ID: <%= jobId %>
+            </div>
+          <% } else { %>
+            <div class="bg-light border rounded p-3 mb-2 shadow-sm">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <div>
+                  <strong><%= job.title %></strong> <span class="text-muted">at <%= job.company %></span>
+                </div>
+                <span class="badge bg-secondary"><%= jobScore %>/100</span>
+              </div>
+              <div class="progress" style="height: 8px;">
+                <div class="progress-bar" role="progressbar" style="width: <%= jobScore %>%;" aria-valuenow="<%= jobScore %>" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+          <% } %>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <!-- Score Section -->
+    <% const queryScore = typeof score !== 'undefined' ? score : null; %>
+    <% const scoreValue = queryScore !== null ? queryScore : (resume.score ?? null); %>
+
+    <% if (scoreValue !== null) { %>
+      <div class="mb-4 px-3 py-2 bg-white rounded shadow-sm">
+        <label class="fw-semibold text-muted">Resume Score:</label>
+        <div class="progress my-1" style="height: 10px;">
+          <div class="progress-bar" role="progressbar" style="width: <%= scoreValue %>% ; background-color: #6c5ce7;" aria-valuenow="<%= scoreValue %>" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <small class="text-muted"><%= scoreValue %>/100</small>
+      </div>
+    <% } %>
+
+    <!-- Scoring Form -->
+    <% if (isOwner) { %>
+      <form action="/resumes/<%= resume._id %>/score" method="POST" class="d-flex flex-column flex-sm-row align-items-stretch gap-2 mb-4">
+        <select name="jobId" class="form-select form-select-sm border-dark-subtle shadow-sm" style="max-width: 300px;" required>
+          <% jobs.forEach(job => { %>
+            <option value="<%= job._id %>"><%= job.title %> - <%= job.company %></option>
+          <% }) %>
+        </select>
+        <button class="btn btn-outline-dark btn-sm px-3 py-1 d-flex align-items-center gap-1 shadow-sm">
+          <i class="bi bi-bar-chart-line"></i> Get Score
+        </button>
+      </form>
+    <% } %>
+
+    <!-- Resume Sections -->
+    <% if (resume.summary) { %>
+      <div class="resume-section">
+        <h5><i class="bi bi-person-lines-fill me-2"></i>Summary</h5>
+        <p class="text-muted"><%= resume.summary %></p>
+      </div>
+    <% } %>
+
+    <% if (resume.skills?.length) { %>
+      <div class="resume-section">
+        <h5><i class="bi bi-stars me-2"></i>Skills</h5>
+        <ul class="text-muted">
+          <% resume.skills.forEach(skill => { %>
+            <li><%= skill.trim() %></li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <% if (resume.education?.length) { %>
+      <div class="resume-section">
+        <h5><i class="bi bi-mortarboard-fill me-2"></i>Education</h5>
+        <ul class="text-muted">
+          <% resume.education.forEach(edu => { %>
+            <li>
+              <strong><%= edu.degree %></strong>, <%= edu.field %> — <%= edu.institution %><br>
+              <small><%= edu.startYear %> - <%= edu.endYear %></small>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <% if (resume.experience?.length) { %>
+      <div class="resume-section">
+        <h5><i class="bi bi-briefcase-fill me-2"></i>Experience</h5>
+        <ul class="text-muted">
+          <% resume.experience.forEach(exp => { %>
+            <li class="mb-2">
+              <strong><%= exp.role %></strong> at <%= exp.company %><br>
+              <small>
+                <%= new Date(exp.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) %> -
+                <%= new Date(exp.endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) %>
+              </small><br>
+              <%= exp.description %>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <% if (resume.project?.length) { %>
+      <div class="resume-section">
+        <h5><i class="bi bi-kanban-fill me-2"></i>Projects</h5>
+        <ul class="text-muted">
+          <% resume.project.forEach(proj => { %>
+            <li class="mb-2">
+              <strong><%= proj.name %></strong><br>
+              <%= proj.description %>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <!-- Action Buttons -->
+    <% if (isOwner) { %>
+      <div class="text-center mt-4">
+        <a href="/resumes/<%= resume._id %>/edit" class="btn btn-outline-secondary me-2">Edit</a>
+        <form action="/resumes/<%= resume._id %>?_method=DELETE" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-outline-danger">Delete</button>
+        </form>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Custom Styling -->
+<style>
+  .resume-section {
+    margin-bottom: 2rem;
+    padding: 1rem 1.2rem;
+    background-color: #ffffff;
+    border-left: 4px solid #6c5ce7;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .progress {
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    border-radius: 6px;
+    transition: width 0.4s ease;
+  }
+  .btn-outline-secondary:hover {
+    background-color: #636e72;
+    color: white;
+  }
+  .btn-outline-danger:hover {
+    background-color: #d63031;
+    color: white;
+  }
+  .bg-light {
+    background-color: #f9f9f9 !important;
+  }
+  .badge.bg-secondary {
+    background-color: #6c5ce7;
+  }
+</style>

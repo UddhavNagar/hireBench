@@ -1,0 +1,191 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="analytics-container container mt-5">
+  <div class="container mt-5 ">
+    <h2 class="text-center mb-4 text-primary">Skill Analytics Dashboard</h2>
+
+    <div class="d-flex justify-content-end mb-3">
+      <button class="btn btn-sm  btn-toggle-chart" onclick="toggleChartType()">
+        <i class="fas fa-random me-1"></i> Toggle Chart Type
+      </button>
+    </div>
+
+    <div class="row">
+      <!-- Job Skill Chart -->
+      <div class="col-md-6 mb-4">
+        <div class="card p-3 shadow-sm h-100">
+          <h5 class="text-center mb-3">Skills in Demand (from Jobs)</h5>
+          <% if (jobSkills.length === 0) { %>
+            <p class="text-muted text-center">No job skill data available.</p>
+          <% } else { %>
+            <canvas id="jobSkillChart" height="300"></canvas>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Resume Skill Chart -->
+      <div class="col-md-6 mb-4">
+        <div class="card p-3 shadow-sm h-100">
+          <h5 class="text-center mb-3">Skills Candidates Have (from Resumes)</h5>
+          <% if (resumeSkills.length === 0) { %>
+            <p class="text-muted text-center">No resume skill data available.</p>
+          <% } else { %>
+            <canvas id="resumeSkillChart" height="300"></canvas>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-info text-center">
+    Average skills per resume: <strong><%= avgSkillsPerResume %></strong>
+  </div>
+
+  <div class="container mt-4">
+    <h5>Top Skills Among High-Scoring Resumes (Score ≥ 70)</h5>
+    <% if (topResumeSkills.length === 0) { %>
+      <p class="text-muted">No high-scoring resume found.</p>
+    <% } else { %>
+      <ul>
+        <% topResumeSkills.forEach(skill => { %>
+          <li><%= skill._id %> — <%= skill.count %> resumes</li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </div>
+    
+
+  <div class="mt-5">
+      <h4 class="mb-3">🔍 Explore Jobs by Skill</h4>
+      <form method="GET" action="/analytics" class="row g-3 align-items-center">
+        <div class="col-auto">
+          <label for="skillSelect" class="col-form-label">Select a Skill:</label>
+        </div>
+        <div class="col-auto">
+          <select id="skillSelect" name="skill" class="form-select" onchange="this.form.submit()">
+            <option value="">-- Choose a skill --</option>
+            <% skillSet.forEach(skill => { %>
+              <option value="<%= skill %>" <%= selectedSkill === skill ? 'selected' : '' %>><%= skill %></option>
+            <% }) %>
+          </select>
+        </div>
+      </form>
+    </div>
+
+    <% if (selectedSkill) { %>
+      <div class="mt-4">
+        <h5>Jobs requiring <span class="text-primary"><%= selectedSkill %></span></h5>
+        <% if (jobsForSkill.length === 0) { %>
+          <p class="text-muted">No jobs found for this skill.</p>
+        <% } else { %>
+          <div class="list-group">
+            <% jobsForSkill.forEach(job => { %>
+              <div class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                  <strong><%= job.title %></strong> at <em><%= job.company %></em>
+                  <br />
+                  <small class="text-muted"><%= job.location %></small>
+                </div>
+                <a href="/jobs/<%= job._id %>" class="btn btn-sm btn-outline-primary mt-2">View Job</a>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- eslint-disable -->
+<script>
+  const jobSkills = <%- JSON.stringify(jobSkills) %>;
+  const resumeSkills = <%- JSON.stringify(resumeSkills) %>;
+
+  let currentType = 'bar';
+  let jobChart, resumeChart;
+
+  function renderCharts() {
+    // Destroy previous charts if they exist
+    if (jobChart) jobChart.destroy();
+    if (resumeChart) resumeChart.destroy();
+
+    const jobSkillLabels = jobSkills.map(skill => skill._id);
+    const jobSkillCounts = jobSkills.map(skill => skill.count);
+    const resumeSkillLabels = resumeSkills.map(skill => skill._id);
+    const resumeSkillCounts = resumeSkills.map(skill => skill.count);
+
+    const commonOptions = {
+      responsive: true,
+      plugins: {
+        legend: { display: currentType === 'bar' ? false : true },
+        title: { display: false }
+      }
+    };
+
+    jobChart = new Chart(document.getElementById('jobSkillChart'), {
+      type: currentType,
+      data: {
+        labels: jobSkillLabels,
+        datasets: [{
+          label: 'Job Skills',
+          data: jobSkillCounts,
+          backgroundColor: currentType === 'bar'
+            ? '#007bff'
+            : jobSkillLabels.map(() => getRandomColor())
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: currentType === 'bar' ? {
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'Count' }
+          },
+          x: {
+            title: { display: true, text: 'Skill' }
+          }
+        } : {}
+      }
+    });
+
+    resumeChart = new Chart(document.getElementById('resumeSkillChart'), {
+      type: currentType,
+      data: {
+        labels: resumeSkillLabels,
+        datasets: [{
+          label: 'Resume Skills',
+          data: resumeSkillCounts,
+          backgroundColor: currentType === 'bar'
+            ? '#28a745'
+            : resumeSkillLabels.map(() => getRandomColor())
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: currentType === 'bar' ? {
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'Count' }
+          },
+          x: {
+            title: { display: true, text: 'Skill' }
+          }
+        } : {}
+      }
+    });
+  }
+
+  function toggleChartType() {
+    currentType = currentType === 'bar' ? 'doughnut' : 'bar';
+    renderCharts();
+  }
+
+  function getRandomColor() {
+    return `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`;
+  }
+
+  renderCharts(); // initial render
+</script>
+<!-- eslint-enable -->

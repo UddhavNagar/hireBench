@@ -1,0 +1,62 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold" style="letter-spacing: 1px; color: #2c3e50;">📄 Your Resumes</h2>
+    <a href="/resumes/new" class="btn btn-outline-purple px-4 py-2 d-flex align-items-center gap-2">
+      <i class="bi bi-file-earmark-plus"></i> Create New Resume
+    </a>
+  </div>
+
+  <% if (resumes.length === 0) { %>
+    <div class="text-center text-muted mt-5">
+      <p class="fs-5">You haven’t created any resumes yet.</p>
+    </div>
+  <% } else { %>
+    <ul class="list-group border-0">
+      <% resumes.forEach(resume => { %>
+        <li class="list-group-item border rounded mb-3 shadow-sm d-flex justify-content-between align-items-center">
+          <a href="/resumes/<%= resume._id %>" class="resume-title-link fw-semibold" style="font-size: 1.1rem;">
+            <%= resume.title %>
+          </a>
+
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <% if (typeof resume.score === 'number') { %>
+              <span class="px-3 py-1 rounded" style="background-color: #ffeaa7; font-weight: 500;">
+                Avg Score: <%= resume.score %>/100
+              </span>
+            <% } %>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+</div>
+
+<!-- Custom Button Styles -->
+<style>
+  .btn-outline-purple {
+    border: 2px solid #525061;
+    color: #5f5e6c;
+    background: transparent;
+    border-radius: 6px;
+    transition: 0.3s;
+  }
+  .btn-outline-purple:hover {
+    background-color: #484654;
+    color: white;
+  }
+
+  /* Hover effect for resume title links */
+  .resume-title-link {
+    color: #2d3436;
+    text-decoration: none;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+  }
+
+  .resume-title-link:hover {
+    color: #4a69bd; /* A nice blue shade */
+    text-decoration: underline;
+  }
+</style>
+

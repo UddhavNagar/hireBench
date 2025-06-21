@@ -1,0 +1,177 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container py-5 messae-box">
+  <div class="card shadow-lg p-4 mx-auto border-0 rounded-4" style="max-width: 900px; background-color: #f8fbff;">
+
+    <h2 class="mb-4 text-center fw-bold text-dark">Chats</h2>
+
+    <!-- 🔍 Search Bar -->
+    <section class="mb-4 message-search-bar">
+      <form class="d-flex gap-2" id="chatSearchForm" onsubmit="event.preventDefault(); filterChats();">
+        <div class="input-group">
+          <input 
+            class="form-control rounded-start border-secondary" 
+            type="search" 
+            id="chatSearchInput" 
+            placeholder="Search chats..." 
+            aria-label="Search"
+          >
+          <button class="btn btn-dark rounded-end" type="submit">Search</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ➕ Start New Chat -->
+    <section class="mb-5 position-relative">
+      <button 
+        class="btn btn-outline-dark start-chat-toggle w-100 py-2 fw-semibold" 
+        type="button" 
+        onclick="toggleChatForm()"
+      >
+        <i class="bi bi-chat-dots me-2"></i> Start New Chat
+      </button>
+
+      <div class="new-chat-overlay d-none" id="newChatOverlay">
+        <div class="card new-chat-card border-0 rounded-4 shadow p-4">
+          <form action="/messages/send" method="POST" class="needs-validation" novalidate>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0 fw-bold text-dark">Start New Chat</h5>
+              <button type="button" class="btn-close" onclick="toggleChatForm()" aria-label="Close"></button>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Recipient Email</label>
+              <input 
+                type="email" 
+                class="form-control border-secondary" 
+                id="email" 
+                name="email" 
+                placeholder="example@hirebench.com" 
+                required
+              >
+            </div>
+            <div class="mb-3">
+              <label for="content" class="form-label">Message</label>
+              <textarea 
+                class="form-control border-secondary" 
+                name="content" 
+                rows="3" 
+                placeholder="Type your message..." 
+                required
+              ></textarea>
+            </div>
+            <button type="submit" class="btn btn-success w-100 fw-semibold">Send & Open Chat</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- 💬 Chat List -->
+    <section>
+      <% if (uniqueChats.length === 0) { %>
+        <p class="text-muted text-center mt-4">No chats yet.</p>
+      <% } else { %>
+        <div class="list-group" id="chatList">
+          <% uniqueChats.forEach(chatUser => { %>
+            <a 
+              href="/messages/<%= chatUser._id %>"
+              class="list-group-item list-group-item-action d-flex justify-content-between align-items-center chat-item rounded-3 py-3 px-4 mb-2"
+              style="background-color: #ffffff; border: 1px solid #e0e0e0;"
+              data-userid="<%= chatUser._id %>"
+              data-name="<%= chatUser.name %>"
+              data-username="<%= chatUser.username %>"
+              data-email="<%= chatUser.email %>"
+            >
+              <div>
+                <strong class="text-dark"><%= chatUser.name %></strong> 
+                (<%= chatUser.username %>) 
+                <% if (chatUser.email.endsWith('@hirebench.com')) { %>
+                  <span class="badge bg-success ms-2"><%= chatUser.email %></span>
+                <% } else { %>
+                  <span class="text-muted ms-2"><%= chatUser.email %></span>
+                <% } %>
+              </div>
+              <% if (chatUser.unreadCount > 0) { %>
+                <span class="badge bg-danger rounded-pill"><%= chatUser.unreadCount %></span>
+              <% } %>
+            </a>
+          <% }) %>
+        </div>
+        <p id="noMatchesMessage" class="text-muted text-center mt-4" style="display: none;">
+          No matching chats found.
+        </p>
+      <% } %>
+    </section>
+
+  </div>
+</div>
+
+<style>
+  .new-chat-overlay {
+    position: absolute;
+    top: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 650px;
+    z-index: 20;
+  }
+
+  .new-chat-card {
+    background-color: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -10%); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  .chat-item:hover {
+    background-color: #f2f2f2;
+  }
+</style>
+
+<script>
+  function filterChats() {
+    const query = document.getElementById("chatSearchInput").value.trim().toLowerCase();
+    const chatItems = document.querySelectorAll(".chat-item");
+    const noMatches = document.getElementById("noMatchesMessage");
+
+    let firstMatch = null;
+    let hasMatch = false;
+
+    chatItems.forEach(item => {
+      const name = item.dataset.name?.toLowerCase() || "";
+      const username = item.dataset.username?.toLowerCase() || "";
+      const email = item.dataset.email?.toLowerCase() || "";
+
+      const matches = name.includes(query) || username.includes(query) || email.includes(query);
+      item.style.display = matches ? "flex" : "none";
+
+      if (matches && !firstMatch) {
+        firstMatch = item;
+        hasMatch = true;
+      }
+    });
+
+    noMatches.style.display = hasMatch ? "none" : "block";
+
+    if (firstMatch) {
+      const userId = firstMatch.dataset.userid;
+      if (userId) {
+        window.location.href = `/messages/${userId}`;
+      }
+    }
+  }
+
+  function toggleChatForm() {
+    const overlay = document.getElementById("newChatOverlay");
+    overlay.classList.toggle("d-none");
+    overlay.classList.add("fade-in");
+  }
+</script>

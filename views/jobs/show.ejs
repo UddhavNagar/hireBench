@@ -1,0 +1,99 @@
+<% layout("/layouts/boilerplate.ejs") %>
+
+<div class="container py-5">
+<div class="card job-show-card shadow-sm mb-4">
+  <div class="row g-0">
+    <!-- Logo Column -->
+    <% if (job.logoImage && job.logoImage.data) { %>
+      <div class="col-md-3 d-flex align-items-center justify-content-center p-4">
+        <img src="data:<%= job.logoImage.contentType %>;base64,<%= job.logoImage.data.toString('base64') %>"
+             class="img-fluid rounded"
+             alt="Logo"
+             style="max-height: 120px; object-fit: contain;">
+      </div>
+    <% } else if (job.logoUrl) { %>
+      <div class="col-md-3 d-flex align-items-center justify-content-center p-4">
+        <img src="<%= job.logoUrl %>"
+             class="img-fluid rounded"
+             alt="Logo"
+             style="max-height: 120px; object-fit: contain;">
+      </div>
+    <% } %>
+
+    <!-- Details Column -->
+    <div class="<%= (job.logoImage && job.logoImage.data) || job.logoUrl ? 'col-md-9' : 'col-12' %>">
+      <div class="card-body">
+        <h3 class="card-title text-primary mb-3 fw-semibold"><%= job.title %></h3>
+        <p class="mb-2"><strong>🏢 Company:</strong> <%= job.company %></p>
+        <p class="mb-2"><strong>📍 Location:</strong> <%= job.location %></p>
+        <% if (job.salary) { %>
+          <p class="mb-2"><strong>💰 Salary:</strong> ₹<%= job.salary.toLocaleString() %></p>
+        <% } %>
+        <% if (job.description) { %>
+          <p class="mb-3"><strong>📝 Description:</strong><br> <%= job.description %></p>
+        <% } %>
+
+        <div class="text-muted small">
+          <p class="mb-1">🕒 <strong>Posted:</strong> <%= job.createdAt.toLocaleString() %></p>
+          <p class="mb-1">🔄 <strong>Updated:</strong> <%= job.updatedAt.toLocaleString() %></p>
+          <p><strong>👤 Posted By:</strong> <%= job.postedBy.username %> (<%= job.postedBy.email %>)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Admin/Recruiter Actions -->
+  <% if (currentUser && (currentUser.role === 'admin' || currentUser._id.equals(job.postedBy._id))) { %>
+    <div class="mb-4 mt-4">
+      <a href="/jobs/<%= job._id %>/edit" class="btn btn-outline-primary me-2">
+        <i class="bi bi-pencil-square"></i> Edit
+      </a>
+      <form method="POST" action="/jobs/<%= job._id %>?_method=DELETE" class="d-inline"
+            onsubmit="return confirm('Are you sure you want to delete this job?');">
+        <button type="submit" class="btn btn-outline-danger">
+          <i class="bi bi-trash"></i> Delete
+        </button>
+      </form>
+    </div>
+  <% } %>
+
+  <!-- Application Section -->
+  <% if (hasApplied) { %>
+    <div class="alert alert-success">You have already applied for this job.</div>
+  <% } else if (currentUser && currentUser.role === 'candidate') { %>
+    <div class="card job-show-application">
+      <div class="card-body">
+        <h4 class="card-title mb-3">Apply to this Job</h4>
+        <form action="/applications/<%= job._id %>" method="POST" class="needs-validation" novalidate>
+          <div class="mb-3">
+            <label for="resume" class="form-label">Select Resume</label>
+            <select name="resume" id="resume" class="form-select" required>
+              <% resumes.forEach(resume => { %>
+                <option value="<%= resume._id %>"><%= resume.title %></option>
+              <% }) %>
+            </select>
+            <div class="invalid-feedback">Please choose a resume.</div>
+          </div>
+          <div class="mb-3">
+            <label for="message" class="form-label">Message (optional)</label>
+            <textarea name="message" id="message"
+                      class="form-control"
+                      placeholder="Write a message to the employer..."
+                      rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-check-circle"></i> Apply
+          </button>
+        </form>
+      </div>
+    </div>
+  <% } else if (!currentUser) { %>
+    <div class="alert alert-info mt-4">
+      <a href="/users/login?returnTo=<%= encodeURIComponent(originalUrl) %>" class="alert-link">
+        Login
+      </a> to apply<small>(only candidates can apply)</small>.
+    </div>
+  <% } %>
+</div>

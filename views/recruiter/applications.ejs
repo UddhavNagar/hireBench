@@ -1,0 +1,207 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-4 received-applications-page">
+  <h1 class="mb-4 text-dark">Received Applications</h1>
+
+  <!-- Filters Section -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <h5 class="mb-0 text-dark d-flex align-items-center">
+      <i class="fa-solid fa-filter me-2 text-dark"></i>Filter Applications
+    </h5>
+
+    <form method="GET" class="d-flex align-items-center gap-3 flex-wrap">
+      <!-- Sort by Score -->
+      <div class="d-flex align-items-center gap-2">
+        <label for="sortScore" class="form-label mb-0 fw-semibold">Score:</label>
+        <select name="sortScore" id="sortScore" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+          <option value="">None</option>
+          <option value="asc" <%= sortScore === 'asc' ? 'selected' : '' %>>Low to High</option>
+          <option value="desc" <%= sortScore === 'desc' ? 'selected' : '' %>>High to Low</option>
+        </select>
+      </div>
+
+      <!-- Filter by Status -->
+      <div class="d-flex align-items-center gap-2">
+        <label for="status" class="form-label mb-0 fw-semibold">Status:</label>
+        <select name="status" id="status" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+          <option value="">All</option>
+          <option value="Pending" <%= status === 'Pending' ? 'selected' : '' %>>Pending</option>
+          <option value="Shortlisted" <%= status === 'Shortlisted' ? 'selected' : '' %>>Shortlisted</option>
+          <option value="Interview" <%= status === 'Interview' ? 'selected' : '' %>>Interview</option>
+          <option value="Rejected" <%= status === 'Rejected' ? 'selected' : '' %>>Rejected</option>
+        </select>
+      </div>
+
+      <% if (search) { %>
+        <input type="hidden" name="search" value="<%= search %>" />
+      <% } %> 
+
+      <a href="/applications/received" class="btn btn-sm btn-outline-dark">
+        Clear Filters
+      </a>
+    </form>
+  </div>
+
+  <!-- Applications Table -->
+  <% if (applications.length === 0) { %>
+    <div class="alert alert-secondary">No applications received yet.</div>
+  <% } else { %>
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle shadow-sm">
+        <thead class="table-light">
+          <tr>
+            <th>Job Title</th>
+            <th>Applicant Name</th>
+            <th>Email</th>
+            <th>Resume</th>
+            <th>Score</th>
+            <th>Status</th>
+            <th>Applied At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% applications.forEach(app => { %>
+            <tr>
+              <td><%= app.job.title %></td>
+              <td><%= app.candidate.username %></td>
+              <td><%= app.candidate.email %></td>
+              <td>
+                <% if (app.resume && app.resume._id) { %>
+                  <a href="/resumes/<%= app.resume._id %>?score=<%= app.score %>" class="btn btn-sm btn-outline-dark" target="_blank">
+                    View Resume
+                  </a>
+                <% } else { %>
+                  <span class="text-muted">No Resume</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (app.score != null) { %>
+                  <%= app.score %>/100
+                <% } else { %>
+                  <span class="text-muted">N/A</span>
+                <% } %>
+              </td>
+              <td>
+                <span class="badge bg-<%= 
+                  app.status === 'Pending' ? 'secondary' : 
+                  app.status === 'Shortlisted' ? 'info' : 
+                  app.status === 'Interview' ? 'dark' : 
+                  app.status === 'Rejected' ? 'danger' : 'secondary'
+                %>">
+                  <%= app.status || 'Pending' %>
+                </span>
+              </td>
+              <td><%= app.createdAt ? app.createdAt.toLocaleString() : 'N/A' %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+
+  <% if (totalPages > 1) { %>
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center">
+        <% for (let p = 1; p <= totalPages; p++) { %>
+          <li class="page-item <%= p === page ? 'active' : '' %>">
+            <a class="page-link"
+               href="?page=<%= p %>
+               <%= sortScore ? '&sortScore=' + sortScore : '' %>
+               <%= status ? '&status=' + status : '' %>
+               <%= search ? '&search=' + search : '' %>">
+              <%= p %>
+            </a>
+          </li>
+        <% } %>
+      </ul>
+    </nav>
+  <% } %>
+</div>
+
+<style>
+  .received-applications-page h1 {
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .table th, .table td {
+    vertical-align: middle !important;
+    font-size: 0.95rem;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    transition: all 0.15s ease-in-out;
+  }
+
+  .badge {
+    font-size: 0.75rem;
+    padding: 0.45em 0.65em;
+    border-radius: 50rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .badge.bg-secondary {
+    background-color: #b2bec3 !important;
+  }
+
+  .badge.bg-info {
+    background-color: #dfe6e9 !important;
+    color: #2d3436;
+  }
+
+  .badge.bg-dark {
+    background-color: #636e72 !important;
+  }
+
+  .badge.bg-danger {
+    background-color: #d63031 !important;
+  }
+
+  .btn-outline-dark:hover,
+  .btn-outline-secondary:hover,
+  .btn-outline-danger:hover {
+    color: #fff !important;
+  }
+
+  .btn-outline-dark:hover {
+    background-color: #2d3436;
+  }
+
+  .btn-outline-secondary:hover {
+    background-color: #6c757d;
+  }
+
+  .btn-outline-danger:hover {
+    background-color: #c0392b;
+  }
+
+  .pagination .page-link {
+    color: #2c3e50;
+    border-radius: 8px;
+  }
+
+  .pagination .page-item.active .page-link {
+    background-color: #2c3e50;
+    border-color: #2c3e50;
+    color: #fff;
+  }
+
+  .form-select:focus,
+  .form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(44, 62, 80, 0.25);
+    border-color: #2c3e50;
+  }
+
+  @media (max-width: 576px) {
+    .table-responsive {
+      font-size: 0.85rem;
+    }
+
+    .received-applications-page h1 {
+      font-size: 1.25rem;
+    }
+  }
+</style>

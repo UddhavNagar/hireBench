@@ -1,0 +1,52 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container my-5">
+  <div class="card shadow p-4 mx-auto" style="max-width: 600px; border-radius: 1rem; background-color: #fdfefe;">
+
+    <!-- Header -->
+    <div class="text-center mb-4">
+      <h4 class="fw-bold text-dark">Edit Message</h4>
+      <p class="text-muted small">Update your message below</p>
+    </div>
+
+    <!-- Edit Form -->
+    <form method="POST" action="/messages/<%= otherUserId %>/edit/<%= message._id %>?_method=PUT">
+      <div class="mb-3">
+        <textarea class="form-control rounded-3 p-3 small-text" name="content" rows="4" placeholder="Edit your message..." required><%= message.content %></textarea>
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <a href="/messages/<%= otherUserId %>" class="btn btn-outline-secondary btn-sm">Cancel</a>
+        <button type="submit" class="btn btn-dark btn-sm">Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Style -->
+<style>
+  .small-text {
+    font-size: 0.875rem;
+  }
+
+  textarea.form-control {
+    background-color: var(--color-bg-light, #f8f9fa);
+    border: 1px solid #ccc;
+    resize: none;
+  }
+
+  .btn-dark {
+    background-color: #343a40;
+    border-color: #343a40;
+  }
+
+  .btn-dark:hover {
+    background-color: #23272b;
+    border-color: #1d2124;
+  }
+
+  .btn-outline-secondary:hover {
+    background-color: #e9ecef;
+    color: #000;
+  }
+</style>

@@ -1,0 +1,73 @@
+<% layout("/layouts/boilerplate.ejs") %>
+
+<div class="container py-5">
+  <div class="card shadow-lg border-0 rounded-4">
+    <div class="card-body p-5">
+      <h2 class="mb-4 text-center fw-bold text-secondary">Create Resume</h2>
+
+      <form action="/resumes" method="POST" class="needs-validation" novalidate>
+
+        <!-- Title -->
+        <div class="mb-3">
+          <label for="title" class="form-label fw-semibold">Title</label>
+          <input type="text" name="resume[title]" id="title" class="form-control" required>
+          <div class="invalid-feedback">Please provide a resume title.</div>
+        </div>
+
+        <!-- Summary -->
+        <div class="mb-3">
+          <label for="summary" class="form-label fw-semibold">Summary</label>
+          <textarea name="resume[summary]" id="summary" class="form-control" rows="3"></textarea>
+        </div>
+
+        <!-- Skills -->
+        <div class="mb-3">
+          <label for="skills" class="form-label fw-semibold">Skills (comma separated)</label>
+          <input type="text" name="resume[skills]" id="skills" class="form-control" placeholder="e.g. JavaScript, Node.js, MongoDB">
+        </div>
+
+        <!-- Education -->
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Education</label>
+          <div class="border rounded p-3 bg-light">
+            <input type="text" name="resume[education][0][degree]" placeholder="Degree (e.g. B.Tech CSE)" class="form-control mb-2">
+            <input type="text" name="resume[education][0][institution]" placeholder="Institution (e.g. NIT Warangal)" class="form-control mb-2">
+            <input type="text" name="resume[education][0][field]" placeholder="Field of Study (e.g. Computer Science)" class="form-control mb-2">
+            <input type="number" name="resume[education][0][startYear]" placeholder="Start Year" class="form-control mb-2">
+            <input type="number" name="resume[education][0][endYear]" placeholder="End Year" class="form-control">
+          </div>
+        </div>
+
+        <!-- Experience -->
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Experience</label>
+          <div class="border rounded p-3 bg-light">
+            <input type="text" name="resume[experience][0][company]" placeholder="Company (e.g. Google)" class="form-control mb-2">
+            <input type="text" name="resume[experience][0][role]" placeholder="Role (e.g. Intern)" class="form-control mb-2">
+            <input type="date" name="resume[experience][0][startDate]" placeholder="Start Date" class="form-control mb-2">
+            <input type="date" name="resume[experience][0][endDate]" placeholder="End Date" class="form-control mb-2">
+            <input type="text" name="resume[experience][0][description]" placeholder="Description" class="form-control">
+          </div>
+        </div>
+
+        <!-- Projects -->
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Projects</label>
+          <div class="border rounded p-3 bg-light">
+            <input type="text" name="resume[projects][0][name]" placeholder="Project Name (e.g. HireBench)" class="form-control mb-2">
+            <textarea name="resume[projects][0][description]" placeholder="Project Description" class="form-control" rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-end mt-4">
+          <button class="btn btn-dark px-4" type="submit">
+            <i class="bi bi-save2-fill me-2"></i> Save Resume
+          </button>
+          <a href="/resumes" class="btn btn-outline-secondary ms-3">Cancel</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

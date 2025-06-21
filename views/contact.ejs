@@ -1,0 +1,102 @@
+<% layout('/layouts/boilerplate') %>
+
+<div class="container py-5">
+  <div class="row text-center mb-4">
+    <h1 class="fw-bold text-dark">Contact Us</h1>
+    <p class="text-muted">We'd love to hear from you! Whether you’re an employer, a candidate, or just curious about HireBench — feel free to reach out.</p>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <% if (successMessage) { %>
+        <div class="thank-you-message text-center py-5 px-4 mt-4 rounded shadow-sm">
+          <h2 class="text-success fw-bold mb-3">🎉 <%= successMessage %></h2>
+          <p class="text-secondary fs-5">We appreciate your interest. Our team will get back to you shortly.</p>
+          <% if (showSendAnother) { %>
+            <a href="/contact" class="btn btn-success btn-lg mt-4 px-5">Send Another Message</a>
+          <% } %>
+        </div>
+      <% } else { %>
+        <form action="/contact" method="POST" class="shadow-sm p-4 rounded bg-light">
+          <div class="mb-3">
+            <label for="name" class="form-label fw-semibold text-dark">Name</label>
+            <input type="text" class="form-control rounded-3" id="name" name="name" required />
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label fw-semibold text-dark">Email</label>
+            <input type="email" class="form-control rounded-3" id="email" name="email" required />
+          </div>
+
+          <div class="mb-3">
+            <label for="message" class="form-label fw-semibold text-dark">Message</label>
+            <textarea class="form-control rounded-3" id="message" name="message" rows="5" required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-dark px-4">Send Message</button>
+        </form>
+      <% } %>
+    </div>
+
+    <div class="row mt-5 text-center">
+      <div class="col">
+        <h4 class="fw-bold mb-3 text-dark">Follow Us</h4>
+        <p class="text-muted mb-4">Stay connected through our social media handles</p>
+        <div class="d-flex justify-content-center gap-4 fs-4">
+          <a href="https://www.linkedin.com/company/yourcompany" target="_blank" aria-label="LinkedIn">
+            <i class="fab fa-linkedin social-icon linkedin"></i>
+          </a>
+          <a href="https://twitter.com/yourtwitter" target="_blank" aria-label="Twitter">
+            <i class="fab fa-twitter social-icon twitter"></i>
+          </a>
+          <a href="https://www.facebook.com/yourpage" target="_blank" aria-label="Facebook">
+            <i class="fab fa-facebook social-icon facebook"></i>
+          </a>
+          <a href="https://www.instagram.com/yourusername" target="_blank" aria-label="Instagram">
+            <i class="fab fa-instagram social-icon instagram"></i>
+          </a>
+          <a href="https://github.com/yourgithub" target="_blank" aria-label="GitHub">
+            <i class="fab fa-github social-icon github"></i>
+          </a>
+          <a href="mailto:contact@hirebench.com" aria-label="Email">
+            <i class="fas fa-envelope social-icon email"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+    /* === Contact Page Styles === */
+  .thank-you-message {
+    background-color: #eaf8f0;
+    border: 2px solid #c8e6c9;
+    border-radius: 1rem;
+  }
+
+  .form-control {
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+  }
+
+  .form-control:focus {
+    border-color: #343a40;
+    box-shadow: 0 0 0 0.1rem rgba(33, 37, 41, 0.25);
+  }
+
+  .btn-dark {
+    background-color: #343a40;
+    border-color: #01060b;
+  }
+
+  .btn-dark:hover {
+    background-color: #a4b1bd;
+    border-color: #60707d;
+  }
+
+  .social-icon:hover {
+    color: #212529;
+  }
+
+</style>

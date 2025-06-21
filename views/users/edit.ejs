@@ -1,0 +1,57 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-5 edit-profile-container">
+  <div class="card shadow-sm p-4 bg-light mx-auto" style="max-width: 600px;">
+    <h3 class="text-center mb-4 text-dark">Edit Profile</h3>
+    <form action="/users/<%= user._id %>?_method=PUT" method="POST">
+      
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Full Name</label>
+        <input type="text" name="fullName" class="form-control" value="<%= user.fullName || '' %>">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Phone</label>
+        <input type="text" name="phone" class="form-control" value="<%= user.phone || '' %>">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Location</label>
+        <input type="text" name="location" class="form-control" value="<%= user.location || '' %>">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-semibold">Bio</label>
+        <textarea name="bio" class="form-control" rows="3"><%= user.bio || '' %></textarea>
+      </div>
+
+      <% if (user.role === "recruiter") { %>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Company</label>
+          <input type="text" name="company" class="form-control" value="<%= user.company || '' %>">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Designation</label>
+          <input type="text" name="designation" class="form-control" value="<%= user.designation || '' %>">
+        </div>
+      <% } %>
+
+      <% if (user.role === "candidate") { %>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">LinkedIn</label>
+          <input type="url" name="linkedin" class="form-control" value="<%= user.linkedin || '' %>">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">GitHub</label>
+          <input type="url" name="github" class="form-control" value="<%= user.github || '' %>">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Portfolio</label>
+          <input type="url" name="portfolio" class="form-control" value="<%= user.portfolio || '' %>">
+        </div>
+      <% } %>
+
+      <button type="submit" class="btn btn-dark w-100">Save Changes</button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,134 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-5 candidate-dashboard">
+  <div class="bg-white p-4 rounded shadow-sm mb-4">
+    <h2 class="fw-bold mb-2" style="color: #2c3e50;">🎯 Candidate Dashboard</h2>
+    <p class="lead mb-0 text-muted">Welcome, <strong><%= currentUser.name %></strong>! Here's a quick overview of your activity.</p>
+  </div>
+
+  <div class="row g-4">
+    <!-- Applications Summary -->
+    <div class="col-md-4">
+      <div class="dashboard-card h-100 border-start border-4 border-apps">
+        <div class="card-body">
+          <h5 class="card-title mb-2">📄 Applications</h5>
+          <p class="card-text text-muted">You have <strong><%= applicationCount || 0 %></strong> active application(s).</p>
+          <a href="/applications/my" class="btn btn-sm custom-btn-apps">View Applications</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resume Summary -->
+    <div class="col-md-4">
+      <div class="dashboard-card h-100 border-start border-4 border-resume">
+        <div class="card-body">
+          <h5 class="card-title mb-2">📎 Resume</h5>
+          <p class="card-text text-muted">
+            Last uploaded on:
+            <strong><%= lastResumeUploadDate || 'No resume uploaded yet' %></strong>
+          </p>
+          <a href="/resumes" class="btn btn-sm custom-btn-resume">Manage Resume</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Summary -->
+    <div class="col-md-4">
+      <div class="dashboard-card h-100 border-start border-4 border-profile">
+        <div class="card-body">
+          <h5 class="card-title mb-2">👤 Profile</h5>
+          <p class="card-text text-muted">Keep your profile up to date for better matches.</p>
+          <a href="/users/<%= currentUser._id %>/edit" class="btn btn-sm custom-btn-profile">Edit Profile</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-5">
+    <div class="bg-white p-3 rounded shadow-sm">
+      <h4 class="mb-3" style="color: #2c3e50;">🚀 Quick Links</h4>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item"><i class="bi bi-graph-up-arrow me-2"></i><a href="/resumes/scores">View Resume Scores</a></li>
+        <li class="list-group-item"><i class="bi bi-briefcase me-2"></i><a href="/jobs">Browse Jobs</a></li>
+        <li class="list-group-item"><i class="bi bi-upload me-2"></i><a href="/resumes">Upload or Edit Resume</a></li>
+        <li class="list-group-item"><i class="bi bi-check2-square me-2"></i><a href="/applications/my">Check My Applications</a></li>
+        <li class="list-group-item"><i class="bi bi-person-circle me-2"></i><a href="/users/profile">Edit My Profile</a></li>
+    </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Styling -->
+<style>
+  .candidate-dashboard {
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .dashboard-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 1.2rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+  }
+
+  .border-apps {
+    border-color: #6c5ce7 !important;
+  }
+  .border-resume {
+    border-color: #00b894 !important;
+  }
+  .border-profile {
+    border-color: #0984e3 !important;
+  }
+
+  .custom-btn-apps {
+    background-color: #6c5ce7;
+    color: #fff;
+  }
+  .custom-btn-apps:hover {
+    background-color: #574b90;
+    color: #fff;
+  }
+
+  .custom-btn-resume {
+    background-color: #00b894;
+    color: white;
+  }
+  .custom-btn-resume:hover {
+    background-color: #019875;
+    color: white;
+  }
+
+  .custom-btn-profile {
+    background-color: #0984e3;
+    color: white;
+  }
+  .custom-btn-profile:hover {
+    background-color: #065ab9;
+    color: white;
+  }
+
+  .list-group-item a {
+    text-decoration: none;
+    color: #2d3436;
+    transition: color 0.2s ease;
+  }
+  .list-group-item a:hover {
+    color: #6c5ce7;
+  }
+  @media (max-width: 576px) {
+  .candidate-dashboard h2 {
+    font-size: 1.5rem;
+  }
+  .card-title {
+    font-size: 1.1rem;
+  }
+}
+
+</style>

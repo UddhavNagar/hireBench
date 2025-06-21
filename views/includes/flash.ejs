@@ -1,0 +1,66 @@
+<div id="flash-messages-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+  <% if (success && success.length > 0) { %>
+    <div class="alert alert-success alert-dismissible fade show shadow rounded-3 mb-2 position-relative" role="alert">
+      <span class="flash-mark badge bg-light text-primary position-absolute top-0 start-0 m-1 px-2">HB</span>
+      <i class="fa-solid fa-circle-check me-2"></i>
+      <%= success[0] %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <% if (error && error.length > 0) { %>
+    <div class="alert alert-danger alert-dismissible fade show shadow rounded-3 mb-2 position-relative" role="alert">
+      <span class="flash-mark badge bg-light text-danger position-absolute top-0 start-0 m-1 px-2">HB</span>
+      <i class="fa-solid fa-circle-exclamation me-2"></i>
+      <%= error[0] %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+</div>
+
+<style>
+  #flash-messages-container {
+  position: fixed;
+  top: 1.2rem;
+  right: 1.2rem;
+  z-index: 1055;
+}
+
+#flash-messages-container .alert {
+  min-width: 280px;
+  animation: slideInFadeOut 4s ease forwards;
+  position: relative;
+  padding-left: 2.5rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.1);
+}
+
+/* Animation for Flash */
+@keyframes slideInFadeOut {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+.flash-mark {
+  font-size: 0.65rem;
+  font-weight: bold;
+  border-radius: 0.3rem;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+</style>

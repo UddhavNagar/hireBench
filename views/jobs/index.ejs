@@ -1,0 +1,72 @@
+<% layout("/layouts/boilerplate.ejs") %>
+
+<div class="container py-4">
+  <h1 class="mb-4 text-primary">✨ Explore Jobs</h1>
+
+  <% if (allJobs.length === 0) { %>
+    <div class="alert alert-info text-center">No jobs available at the moment.</div>
+  <% } %>
+
+  <% if (search) { %>
+    <p class="text-muted">🔍 Showing results for "<strong><%= search %></strong>"</p>
+  <% } %>
+
+  <div class="row row-cols-1 row-cols-md-2 g-4">
+    <% for (let job of allJobs) { %>
+      <div class="col">
+        <a href="/jobs/<%= job._id %>" class="text-decoration-none text-dark">
+          <div class="card shadow-sm border-0 h-100 job-index-card transition-card">
+            <div class="row g-0">
+              <% if (job.logoImage && job.logoImage.data) { %>
+                <div class="col-md-4 d-flex align-items-center justify-content-center p-3">
+                  <img 
+                    src="data:<%= job.logoImage.contentType %>;base64,<%= job.logoImage.data.toString('base64') %>" 
+                    alt="<%= job.company %> logo" 
+                    class="img-fluid rounded" 
+                    style="max-height: 80px; object-fit: contain;"
+                  >
+                </div>
+              <% } else if (job.logoUrl) { %>
+                <div class="col-md-4 d-flex align-items-center justify-content-center p-3">
+                  <img 
+                    src="<%= job.logoUrl %>" 
+                    alt="<%= job.company %> logo" 
+                    class="img-fluid rounded" 
+                    style="max-height: 80px; object-fit: contain;"
+                  >
+                </div>
+              <% } %>
+
+              <div class="<%= (job.logoImage && job.logoImage.data) || job.logoUrl ? 'col-md-8' : 'col-md-12' %>">
+                <div class="card-body">
+                  <h5 class="card-title mb-1"><%= job.title %></h5>
+                  <p class="card-text mb-1"><strong>🏢 Company:</strong> <%= job.company %></p>
+                  <% if (job.location) { %>
+                    <p class="card-text mb-1"><strong>📍 Location:</strong> <%= job.location %></p>
+                  <% } %>
+                  <div class="mt-2 d-flex align-items-center gap-2 flex-wrap">
+                    <% if (appliedJobIds.includes(job._id.toString())) { %>
+                      <span class="badge bg-success">Applied</span>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    <% } %>
+  </div>
+
+  <% if (totalPages > 1) { %>
+    <nav aria-label="Page navigation" class="mt-4">
+      <ul class="pagination justify-content-center">
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+            <a class="page-link" href="?search=<%= search || '' %>&page=<%= i %>"><%= i %></a>
+          </li>
+        <% } %>
+      </ul>
+    </nav>
+  <% } %>
+</div>

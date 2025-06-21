@@ -1,0 +1,117 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-4 jobs-posted-page">
+  <h1 class="mb-4 text-center fw-semibold text-dark">All Jobs Posted</h1>
+
+  <div class="table-responsive shadow-sm rounded">
+    <table class="table table-bordered table-hover job-table">
+      <thead class="table-header">
+        <tr>
+          <th>Title</th>
+          <th>Company</th>
+          <th>Location</th>
+          <th>Posted On</th>
+          <th>Applications</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (jobs.length === 0) { %>
+          <tr>
+            <td colspan="6" class="text-center text-muted">
+              <% if (search) { %>
+                No jobs found for "<%= search %>".
+              <% } else { %>
+                No jobs posted yet.
+              <% } %>
+            </td>
+          </tr>
+        <% } else { %>
+          <% jobs.forEach(job => { %>
+            <tr class="align-middle">
+              <td class="fw-medium"><%= job.title %></td>
+              <td><%= job.company %></td>
+              <td><%= job.location %></td>
+              <td><%= new Date(job.createdAt).toLocaleDateString() %></td>
+              <td><%= job.applicationsCount %></td>
+              <td>
+                <a href="/recruiter/<%= job._id %>/applications" class="btn btn-sm btn-outline-info me-1">Applications</a>
+                <a href="/jobs/<%= job._id %>/edit" class="btn btn-sm btn-outline-secondary me-1">Edit</a>
+                <form action="/jobs/<%= job._id %>?_method=DELETE" method="POST" class="d-inline">
+                  <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this job?')">Delete</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  .jobs-posted-page {
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .job-table {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .job-table thead.table-header {
+    background-color: #2d3436;
+    color: #ffffff;
+    border-bottom: 2px solid #ced4da;
+  }
+
+  .job-table th,
+  .job-table td {
+    vertical-align: middle;
+    padding: 0.75rem 1rem;
+  }
+
+  .job-table tbody tr:hover {
+    background-color: #f1f3f5;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    transition: background 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+
+  .btn-outline-info {
+    color: #0c5460;
+    border-color: #0c5460;
+  }
+
+  .btn-outline-info:hover {
+    background-color: #0c5460;
+    color: #fff;
+  }
+
+  .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+  }
+
+  .btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #fff;
+  }
+
+  .fw-medium {
+    font-weight: 500;
+    color: #2d3436;
+  }
+
+  @media (max-width: 576px) {
+    .job-table th,
+    .job-table td {
+      font-size: 0.875rem;
+      padding: 0.5rem;
+    }
+
+    .btn {
+      margin-bottom: 0.25rem;
+    }
+  }
+</style>

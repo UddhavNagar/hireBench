@@ -1,0 +1,43 @@
+<div class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="fa-solid fa-user fa-lg me-1"></i>
+  </a>
+  <ul class="dropdown-menu dropdown-menu-end rounded-2 shadow-sm" aria-labelledby="userDropdown">
+    
+    <li>
+      <a class="dropdown-item d-flex align-items-center gap-2" href="/users/profile">
+        <i class="fa-solid fa-user text-primary"></i> Profile
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item d-flex align-items-center gap-2" href="/resumes">
+        <i class="fa-solid fa-file-lines text-success"></i> My Resume
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item d-flex align-items-center gap-2" href="/applications/my">
+        <i class="fa-solid fa-briefcase text-info"></i> My Applications
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item d-flex align-items-center gap-2" href="/candidate/dashboard">
+        <i class="fa-solid fa-chart-line text-warning"></i> Dashboard
+      </a>
+    </li>
+
+    <li><hr class="dropdown-divider"></li>
+
+    <li>
+      <a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="/users/logout">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout
+      </a>
+    </li>
+    <li>
+      <form action="/users/<%= currentUser._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Are you sure you want to delete your account?')">
+        <button class="dropdown-item d-flex align-items-center gap-2 text-danger" type="submit">
+          <i class="fas fa-user-slash"></i> Delete Account
+        </button>
+      </form>
+    </li>
+  </ul>
+</div>

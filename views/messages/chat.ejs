@@ -1,0 +1,163 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container my-5">
+  <div class="card shadow p-4 mx-auto" style="max-width: 800px; border-radius: 1rem; background-color: #fdfefe;">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="mb-0 text-dark fw-bold">
+        Chat with <%= otherUser.name %> (<%= otherUser.username %>, <%= otherUser.email %>)
+      </h4>
+      <form action="/messages/<%= otherUser._id %>?_method=DELETE" method="POST" onsubmit="return confirm('Delete entire conversation?');">
+        <button class="btn btn-sm btn-outline-danger">Clear Chat</button>
+      </form>
+    </div>
+
+    <hr>
+
+    <!-- Chat Box -->
+    <div id="chatBox" class="chat-box mb-4 px-2">
+      <div id="chatMessages">
+        <% let lastDate = null; %>
+      <% messages.forEach(msg => {
+          const isSender = msg.sender._id.equals(currentUser._id);
+          const ts = new Date(msg.timestamp);
+          const dateStr = ts.toLocaleDateString();
+          const timeStr = ts.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+          const isNewDate = lastDate !== dateStr;
+          if (isNewDate) { lastDate = dateStr; 
+      %>
+        <!-- Date Separator -->
+        <div class="text-center my-2 text-muted" style="font-size: 0.8rem;">
+          <%= dateStr %>
+        </div>
+      <% } %>
+
+      <div class="chat-message-wrapper <%= isSender ? 'text-end' : 'text-start' %>">
+        <div class="chat-message-inner position-relative" onclick="selectMessage(this, '<%= msg._id %>')">
+          
+          <!-- Edit/Delete Buttons -->
+          <div class="delete-msg-btn" id="actions-<%= msg._id %>">
+            <form action="/messages/<%= otherUser._id %>/delete/<%= msg._id %>?_method=DELETE"
+                  method="POST"
+                  class="d-inline"
+                  onsubmit="return confirm('Delete this message?');">
+              <button type="submit" class="btn btn-sm btn-outline-danger p-1 rounded" title="Delete">
+                <i class="bi bi-trash"></i>
+              </button>
+            </form>
+            <a href="/messages/<%= otherUser._id %>/edit/<%= msg._id %>"
+              class="btn btn-sm btn-outline-primary p-1 rounded ms-1"
+              title="Edit">
+              <i class="bi bi-pencil"></i>
+            </a>
+          </div>
+
+          <!-- Message -->
+          <div class="message-bubble p-2">
+            <div><%= msg.content %></div>
+            <div class="timestamp text-muted mt-1"><%= timeStr %></div>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+      <div id="bottomOfChat" style="height: 1px;"></div>
+
+      </div>
+    </div>
+
+    <!-- Scroll to Bottom Button -->
+    <button id="scrollToBottomBtn" class="btn btn-dark position-fixed bottom-0 end-0 m-4 rounded-circle shadow" style="z-index: 1000; display: none;" onclick="scrollToBottom()">
+      <i class="bi bi-arrow-down"></i>
+    </button>
+
+    <!-- Message Form -->
+    <form method="POST" action="/messages/<%= otherUser._id %>">
+      <div class="mb-3">
+        <textarea class="form-control small-text" name="content" rows="2" placeholder="Type your message..." required></textarea>
+      </div>
+      <div class="d-flex justify-content-between">
+        <a href="/messages" class="btn btn-outline-secondary btn-sm">Back to Chats</a>
+        <button type="submit" class="btn btn-dark btn-sm">Send</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<!-- Styles -->
+<style>
+  .chat-box {
+    max-height: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    word-break: break-word;
+  }
+
+  .chat-message-wrapper {
+    margin: 0.25rem 0;
+  }
+
+  .chat-message-inner {
+    position: relative;
+    display: inline-block;
+    max-width: 60%;
+  }
+
+  .chat-message-inner .message-bubble {
+    border-radius: 0.5rem;
+    background-color: var(--color-bg-light, #f1f1f1);
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .chat-message-wrapper.text-end .message-bubble {
+    background-color: var(--color-accent, #e8f0fe);
+  }
+
+  .timestamp {
+    font-size: 0.7rem;
+    text-transform: lowercase;
+  }
+
+  .delete-msg-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: none;
+  }
+
+
+  .chat-message-inner:hover .delete-msg-btn {
+    display: block;
+  }
+
+  .small-text {
+    font-size: 0.875rem;
+  }
+</style>
+
+<!-- Scripts -->
+<script>
+  const chatBox = document.getElementById("chatBox");
+  const scrollBtn = document.getElementById("scrollToBottomBtn");
+
+  function scrollToBottom() {
+    document.getElementById("bottomOfChat").scrollIntoView({ behavior: "smooth" });
+  }
+
+  function toggleScrollButton() {
+    const atBottom = chatBox.scrollHeight - chatBox.scrollTop <= chatBox.clientHeight + 50;
+    scrollBtn.style.display = atBottom ? "none" : "block";
+  }
+
+  function selectMessage(el, id) {
+    document.querySelectorAll(".delete-msg-btn").forEach(btn => btn.style.display = "none");
+    const btnGroup = document.getElementById("actions-" + id);
+    if (btnGroup) btnGroup.style.display = "block";
+  }
+
+  chatBox.addEventListener("scroll", toggleScrollButton);
+  window.onload = () => { scrollToBottom(); toggleScrollButton(); };
+</script>

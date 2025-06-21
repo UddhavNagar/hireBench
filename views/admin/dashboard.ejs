@@ -1,0 +1,43 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container mt-5 admin-dashboard-page">
+  <h1 class="mb-4">Welcome, Admin</h1>
+
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card text-bg-primary h-100">
+        <div class="card-body">
+          <h5 class="card-title">Total Users</h5>
+          <p class="card-text fs-3"><%= totalUsers %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-bg-success h-100">
+        <div class="card-body">
+          <h5 class="card-title">Total Jobs</h5>
+          <p class="card-text fs-3"><%= totalJobs %></p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-bg-warning h-100">
+        <div class="card-body">
+          <h5 class="card-title">Total Resumes</h5>
+          <p class="card-text fs-3"><%= totalResumes %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="my-4">
+
+<div class="mt-4">
+  <h4>Quick Links</h4>
+  <ul>
+    <li><a href="/admin/users">View All Users</a></li>
+    <li><a href="/admin/jobs">View All Jobs</a></li>
+    <li><a href="/admin/resumes">View All Resumes</a></li>
+  </ul>
+</div>

@@ -1,0 +1,159 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="container mt-4">
+  <h2 class="mb-4 text-dark">Applications for <%= job.title %></h2>
+
+  <!-- Filter Section -->
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h5 class="mb-0 text-dark">
+      <i class="fa-solid fa-filter me-2 text-dark"></i>Filter Applications
+    </h5>
+
+    <form method="GET" class="d-flex align-items-center gap-2 flex-wrap">
+      <!-- Sort by Score -->
+      <label for="sortScore" class="form-label mb-0 fw-semibold">Score:</label>
+      <select name="sortScore" id="sortScore" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+        <option value="">None</option>
+        <option value="asc" <%= sortScore === 'asc' ? 'selected' : '' %>>Low to High</option>
+        <option value="desc" <%= sortScore === 'desc' ? 'selected' : '' %>>High to Low</option>
+      </select>
+
+      <!-- Filter by Status -->
+      <label for="status" class="form-label mb-0 fw-semibold">Status:</label>
+      <select name="status" id="status" class="form-select form-select-sm w-auto" onchange="this.form.submit()">
+        <option value="">All</option>
+        <option value="Pending" <%= status === 'Pending' ? 'selected' : '' %>>Pending</option>
+        <option value="Shortlisted" <%= status === 'Shortlisted' ? 'selected' : '' %>>Shortlisted</option>
+        <option value="Interview" <%= status === 'Interview' ? 'selected' : '' %>>Interview</option>
+        <option value="Rejected" <%= status === 'Rejected' ? 'selected' : '' %>>Rejected</option>
+      </select>
+
+      <% if (search) { %>
+        <input type="hidden" name="search" value="<%= search %>" />
+      <% } %>
+
+      <a href="/recruiter/<%= job._id %>/applications" class="btn btn-sm btn-outline-dark">
+        Clear Filters
+      </a>
+    </form>
+  </div>
+
+  <!-- Application Table -->
+  <% if (applications.length === 0) { %>
+    <div class="alert alert-secondary">No applications for this job yet.</div>
+  <% } else { %>
+    <div class="table-responsive shadow-sm">
+      <table class="table table-bordered table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Candidate Name</th>
+            <th>Email</th>
+            <th>Resume</th>
+            <th>Score</th>
+            <th>Status</th>
+            <th>Applied At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% applications.forEach(app => { %>
+            <tr>
+              <td><%= app.candidate.username %></td>
+              <td><%= app.candidate.email %></td>
+              <td>
+                <% if (app.resume && app.resume._id) { %>
+                  <a href="/resumes/<%= app.resume._id %>" 
+                     class="btn btn-sm btn-outline-secondary" 
+                     target="_blank">
+                    View Resume
+                  </a>
+                <% } else { %>
+                  <span class="text-muted">No Resume</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (app.score != null) { %>
+                  <%= app.score %>/100
+                <% } else { %>
+                  <span class="text-muted">N/A</span>
+                <% } %>
+              </td>
+              <td>
+                <span class="badge bg-<%= 
+                  app.status === 'Pending' ? 'secondary' : 
+                  app.status === 'Shortlisted' ? 'info' : 
+                  app.status === 'Interview' ? 'dark' : 
+                  app.status === 'Rejected' ? 'danger' : 'secondary'
+                %>"><%= app.status %></span>
+              </td>
+              <td><%= app.appliedAt ? app.appliedAt.toLocaleString() : 'N/A' %></td>
+              <td>
+                <a href="/applications/<%= app._id %>" 
+                   class="btn btn-sm btn-outline-dark">
+                  View Application
+                </a>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+
+  <% if (totalPages > 1) { %>
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center">
+        <% for (let p = 1; p <= totalPages; p++) { %>
+          <li class="page-item <%= p === page ? 'active' : '' %>">
+            <a class="page-link"
+               href="?page=<%= p %>
+               <%= sortScore ? '&sortScore=' + sortScore : '' %>
+               <%= status ? '&status=' + status : '' %>
+               <%= search ? '&search=' + search : '' %>">
+              <%= p %>
+            </a>
+          </li>
+        <% } %>
+      </ul>
+    </nav>
+  <% } %>
+</div>
+
+<style>
+  h2 {
+    font-weight: 600;
+  }
+
+  .form-select:focus,
+  .form-control:focus {
+    box-shadow: 0 0 0 0.15rem rgba(33, 37, 41, 0.25);
+    border-color: #343a40;
+  }
+
+  .badge {
+    font-size: 0.75rem;
+    padding: 0.4em 0.6em;
+    border-radius: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+
+  .btn-outline-dark:hover {
+    background-color: #343a40;
+    color: #fff;
+  }
+
+  @media (max-width: 576px) {
+    table {
+      font-size: 0.9rem;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+    }
+  }
+</style>
